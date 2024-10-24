@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .notice {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+
+    .notice img {
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+    }
+
+    .social-icons img {
+      width: 32px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Section -->
+  <div class="container" id="login-container">
+    <h2>Admin Login</h2>
+    <input type="text" id="username" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button onclick="login()">Login</button>
+    <p id="error-message" style="color: red;"></p>
+  </div>
+
+  <!-- Notice Management Section -->
+  <div class="container hidden" id="notice-container">
+    <h2>Create Notice</h2>
+    <input type="text" id="notice-title" placeholder="Notice Title" required><br>
+    <textarea id="notice-summary" placeholder="Notice Summary" rows="4" required></textarea><br>
+    <input type="file" id="notice-file" accept="image/*,video/*,application/pdf" capture="environment" onchange="previewFile()"><br>
+    <button onclick="addNotice()">Post Notice</button>
+
+    <h2>Notices</h2>
+    <div id="notice-list"></div>
+  </div>
+
+  <script>
+    // Login function
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (username === 'vadmin' && password === '12345') {
+        document.getElementById('login-container').classList.add('hidden');
+        document.getElementById('notice-container').classList.remove('hidden');
+      } else {
+        document.getElementById('error-message').innerText = 'Invalid username or password';
+      }
+    }
+
+    // Preview uploaded file (if it's an image)
+    function previewFile() {
+      const file = document.getElementById('notice-file').files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imgPreview = document.createElement('img');
+          imgPreview.src = e.target.result;
+          imgPreview.alt = 'Uploaded Image';
+          document.getElementById('notice-list').appendChild(imgPreview);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Add a new notice
+    function addNotice() {
+      const title = document.getElementById('notice-title').value;
+      const summary = document.getElementById('notice-summary').value;
+      const fileInput = document.getElementById('notice-file');
+      let fileName = '';
+
+      if (fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
+      }
+
+      if (title && summary) {
+        const noticeList = document.getElementById('notice-list');
+        const notice = document.createElement('div');
+        notice.className = 'notice';
+
+        notice.innerHTML = `
+          <h3>${title}</h3>
+          <p>${summary}</p>
+          ${fileName && !fileInput.files[0].type.startsWith('image/') ? `<p><strong>File:</strong> ${fileName}</p>` : ''}
+          <div class="social-icons">
+            <img src="https://img.icons8.com/color/48/facebook.png" alt="Facebook" onclick="shareNotice('Facebook')">
+            <img src="https://img.icons8.com/color/48/twitter.png" alt="Twitter" onclick="shareNotice('Twitter')">
+            <img src="https://img.icons8.com/color/48/youtube-play.png" alt="YouTube" onclick="shareNotice('YouTube')">
+            <img src="https://img.icons8.com/color/48/instagram-new.png" alt="Instagram" onclick="shareNotice('Instagram')">
+          </div>
+        `;
+
+        noticeList.appendChild(notice);
+
+        // Clear inputs after posting the notice
+        document.getElementById('notice-title').value = '';
+        document.getElementById('notice-summary').value = '';
+        document.getElementById('notice-file').value = '';
+      }
+    }
+
+    // Simulate social media sharing
+    function shareNotice(platform) {
+      alert(`Notice shared on ${platform}!`);
+    }
+  </script>
+
+</body>
+</html>
